@@ -1,31 +1,27 @@
+import { GetBoard } from '@/api/board/board'
+import { GetBoardComment } from '@/api/board/boardcomment'
 import BoardComment from '@/components/pages/board/BoardComment'
-function Board() {
+import BoardImage from '@/components/pages/board/BoardImage'
+import BoardLikeAndComment from '@/components/pages/board/BoardLikeAndComment'
+import BoardProfile from '@/components/pages/board/BoardProfile'
+import { BoardType } from '@/type/BoardType'
+
+export default async function Board({ params }: { params: { boardId: string } }) {
+    const boardId: string = params.boardId
+    // console.log('boardId', boardId)
+    const board: BoardType = await GetBoard(boardId)
+    const comment = await GetBoardComment(boardId, 0)
     return (
-        <div className="p-4 bg-red-300 h-[calc(100svh-5rem)] ">
+        <main className="space-y-3 p-3 h-[calc(100dvh-110px)] overflow-y-scroll">
             <div className="flex items-center mb-4">
-                <div className="bg-gray-400 rounded-full w-12 h-12 flex items-center justify-center text-sm">
-                    프로필
-                </div>
-                <div className="ml-3">
-                    <p>작성자 이름</p>
-                    <p>2024년 5월 21일</p>
-                </div>
+                <BoardProfile writerUuid={board.writerUuid} createdAt={board.createdAt} />
             </div>
-            <div className="mb-4">
-                <p>게시글 내용</p>
+            <div>
+                <p>{board.content}</p>
             </div>
-            <div className="flex items-center  border-t-2 mb-4">
-                <button className="flex items-center text-gray-500 mt-3">
-                    <div className="bg-gray-400 rounded-full w-7 h-7 flex items-center justify-center text-sm">굳</div>
-                    <span>좋아요 1000개</span>
-                </button>
-                <button className="flex items-center text-gray-500 mt-3">
-                    <div className="bg-gray-400 rounded-full w-7 h-7 flex items-center justify-center text-sm">댓</div>
-                    <span>댓글 1000개</span>
-                </button>
-            </div>
-            <BoardComment />
-        </div>
+            <BoardImage imageUrls={board.imageUrls} />
+            {/* <BoardLikeAndComment /> */}
+            <BoardComment boardId={boardId} data={comment.commentList} lastPage={comment.isLast} />
+        </main>
     )
 }
-export default Board
